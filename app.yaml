@@ -1,27 +1,27 @@
 runtime: python27
 api_version: 1
-threadsafe: yes
+threadsafe: true
 
 handlers:
 - url: .*
   script: main.app
 
 libraries:
-- name: flask
-  version: "0.11.1"
-- name: jinja2
-  version: "2.8"
-  name: markupsafe
-  version: "0.23"
-  name: werkzeug
-  version: "0.11.10"
-  name: click
-  version: 6.6
-  name: gunicorn
-  version: "19.6.0"
-  name: itsdangerous
-  version: "0.24"
-  name: requests
-  version: "2.10.0"
-  name: wsgiref
-  version: "0.1.2"
+#- name: flask
+#  version: "0.11.1"
+#- name: jinja2
+#  version: "2.8"
+#- name: markupsafe
+#  version: "0.23"
+#- name: werkzeug
+#  version: "0.11.10"
+#- name: click
+#  version: 6.6
+#- name: gunicorn
+#  version: "19.6.0"
+#- name: itsdangerous
+#  version: "0.24"
+#- name: requests
+#  version: "2.10.0"
+#- name: wsgiref
+#  version: "0.1.2"
