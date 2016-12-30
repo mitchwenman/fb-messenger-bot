@@ -8,6 +8,10 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
+# Auth route
+@app.route('/auth', methods=['GET'])
+def authUser():
+    return "Auth page", 200
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -40,7 +44,7 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                    send_message(sender_id, "Hi there...")
+                    send_login_button(sender_id)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -53,6 +57,28 @@ def webhook():
 
     return "ok", 200
 
+
+def send_login_button(recipient_id):
+    log("sending login button")
+    params = {
+        "access_token": Settings.get("PAGE_ACCESS_TOKEN")
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+    data = json.dumps({
+        "recipient": {
+            "id": recipient_id
+        },
+        "buttons": {
+            "type": "account_link",
+            "url": "https://work-record-fb-bot.appspot.com/auth"
+        }
+    })
+    r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
+    if r.status_code != 200:
+        log(r.status_code)
+        log(r.text)
 
 def send_message(recipient_id, message_text):
 
