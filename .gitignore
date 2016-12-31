@@ -1,6 +1,9 @@
 
 # Created by https://www.gitignore.io/api/python
 
+# Virtual Env files
+bot/
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
