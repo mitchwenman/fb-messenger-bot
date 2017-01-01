@@ -1,4 +1,5 @@
 import os
+from AppLogger import AppLogger
 
 class AppSettings():
     name = ""
@@ -12,5 +13,5 @@ class AppSettings():
         if not returnVal.value:
             raise Exception(("Setting %s not found") % (returnVal.name))
         else:
-            return returnVal
-                
+            AppLogger.log("Setting {} = {}".format(returnVal.name, returnVal.value))
+            return returnVal.value

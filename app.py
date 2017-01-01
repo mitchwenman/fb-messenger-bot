@@ -2,7 +2,8 @@ import os
 import sys
 import json
 import logging
-from Settings import Settings
+from AppSettings import AppSettings
+from AppLogger import AppLogger
 
 ## Fix for requests
 import requests
@@ -22,7 +23,8 @@ def verify():
     # when the endpoint is registered as a webhook, it must echo back
     # the 'hub.challenge' value it receives in the query arguments
     if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
-        if not request.args.get("hub.verify_token") == Settings.get("VERIFY_TOKEN"):
+        if not request.args.get("hub.verify_token") == AppSettings.get("VERIFY_TOKEN"):
+            log("{} != {}".format(request.args.get("hub.verify_token"), AppSettings.get("VERIFY_TOKEN")))
             return "Verification token mismatch", 403
         return request.args["hub.challenge"], 200
     return "Hello world", 200
@@ -86,11 +88,10 @@ def send_login_button(recipient_id):
 def send_message(recipient_id, message_text):
 
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
-    bot = Bot(Settings.get("PAGE_ACCESS_TOKEN"))
+    bot = Bot(AppSettings.get("PAGE_ACCESS_TOKEN"))
     bot.send_message(recipient_id, message_text)
     log("Message sent")
 
 
 def log(message):  # simple wrapper for logging to stdout on heroku
-    logging.getLogger().setLevel(logging.DEBUG)
-    logging.info(message)
+    AppLogger.log(message)
