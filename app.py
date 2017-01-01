@@ -47,9 +47,9 @@ def webhook():
 
                     sender_id = messaging_event["sender"]["id"]        # the facebook ID of the person sending you the message
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
-                    #message_text = messaging_event["message"]["text"]  # the message's text
+                    message_text = messaging_event["message"]["text"]  # the message's text
 
-                    send_message(sender_id, "Received")
+                    send_message(sender_id, message_text)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -85,13 +85,14 @@ def send_login_button(recipient_id):
         log(r.status_code)
         log(r.text)
 
-def send_message(recipient_id, message_text):
 
+def send_message(recipient_id, message_text):
+    '''
+        Send a message to the receipient
+    '''
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
     bot = Bot(AppSettings.get("PAGE_ACCESS_TOKEN"))
-    bot.send_message(recipient_id, message_text)
-    log("Message sent")
-
+    response = bot.send_text_message(recipient_id, message_text)
 
 def log(message):  # simple wrapper for logging to stdout on heroku
     AppLogger.log(message)
