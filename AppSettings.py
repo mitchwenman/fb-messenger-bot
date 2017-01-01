@@ -10,6 +10,7 @@ class AppSettings():
         returnVal.name = name
         returnVal.value = os.environ.get(name)
         if not returnVal.value:
-            raise Exception("Setting not found")
+            raise Exception(("Setting %s not found") % (returnVal.name))
         else:
             return returnVal
+                
