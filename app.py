@@ -16,7 +16,6 @@ app = Flask(__name__)
 # Auth route
 @app.route('/auth', methods=['GET'])
 def authUser():
-    log("Auth page")
     return "Auth page", 200
 
 # Google Callback link
