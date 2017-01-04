@@ -13,5 +13,4 @@ class AppSettings():
         if not returnVal.value:
             raise Exception(("Setting %s not found") % (returnVal.name))
         else:
-            AppLogger.log("Setting {} = {}".format(returnVal.name, returnVal.value))
             return returnVal.value
