@@ -82,6 +82,10 @@ def webhook():
 
                     send_login_button(sender_id)
 
+                if messaging_event.get("account_linking"):
+                    sender_id = messaging_event["sender"]["id"]
+                    send_message(sender_id, "Congratulations, you have successfully linked the Work History bot to your Google Drive account!")
+
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
 
