@@ -4,11 +4,12 @@ import json
 import logging
 from AppSettings import AppSettings
 from AppLogger import AppLogger
-
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 ## Fix for requests
 import requests
 
-from flask import Flask, request
+from flask import Flask, request, redirect
 from pymessenger.bot import Bot
 
 app = Flask(__name__)
@@ -16,12 +17,21 @@ app = Flask(__name__)
 # Auth route
 @app.route('/auth', methods=['GET'])
 def authUser():
-    return "Auth page", 200
+    gauth = GoogleAuth()
+    auth_url = gauth.GetAuthUrl()
+    return redirect(auth_url)
+    #return "Auth page", 200
 
 # Google Callback link
-@app.route("/OAuthCallback", methods=['POST'])
+@app.route("/OAuthCallback", methods=['GET'])
 def OAuthCallback():
-    return "Google Callback", 200
+    if request.args.get("error"):
+        return "Authentication Error", 403
+    else:
+        code = request.args.get("code")
+        gauth = GoogleAuth()
+        gauth.Auth(code)        
+    return "Thanks for logging in...", 200
 
 @app.route('/', methods=['GET'])
 def verify():
