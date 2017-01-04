@@ -99,13 +99,37 @@ def webhook():
 
 
 def send_login_button(recipient_id):
-    log("sending login button")
+    log("sending login button to " + recipient_id)
     bot = Bot(AppSettings.get("PAGE_ACCESS_TOKEN"))
-    buttons = [{
-        "type": "account_link",
-        "url": "https://4c8bde1f.ngrok.io/auth"
-    }]
-    result = bot.send_button_message(recipient_id, "Login", buttons)
+
+    pic = {
+        'title': 'Login to Drive',
+        'image_url': 'https://www.google.com/drive/static/images/drive/logo-drive.png'
+    }
+    button = {
+            "type": "account_link",
+            "url": "https://4c8bde1f.ngrok.io/auth"
+    }
+
+
+
+    result = bot.send_message(recipient_id, json.dumps({
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "generic",
+                    "elements": [{
+                        'title': 'Login to Drive',
+                        'image_url': 'https://www.google.com/drive/static/images/drive/logo-drive.png'
+                    ,
+                        "buttons": [{
+                                    "type": "account_link",
+                                    "url": "https://4c8bde1f.ngrok.io/auth"
+                        }]
+                    }]
+                }
+            }
+    }))
     log(result) # For debugging
 
 
