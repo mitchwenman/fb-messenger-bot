@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import urllib
 import logging
 from AppSettings import AppSettings
 from AppLogger import AppLogger
@@ -9,14 +10,19 @@ from pydrive.drive import GoogleDrive
 ## Fix for requests
 import requests
 
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, session
 from pymessenger.bot import Bot
 
 app = Flask(__name__)
-
+app.secret_key = AppSettings.get("APP_SECRET_KEY") #secure storage across requests
 # Auth route
 @app.route('/auth', methods=['GET'])
 def authUser():
+    log(request.args)
+    account_linking_token = request.args.get("account_linking_token")
+    redirect_uri = request.args.get("redirect_uri")
+    session["ACCOUNT_LINKING_TOKEN"] = account_linking_token
+    session["REDIRECT_URI"] = redirect_uri
     gauth = GoogleAuth()
     auth_url = gauth.GetAuthUrl()
     return redirect(auth_url)
@@ -29,9 +35,16 @@ def OAuthCallback():
         return "Authentication Error", 403
     else:
         code = request.args.get("code")
-        gauth = GoogleAuth()
-        gauth.Auth(code)        
-    return "Thanks for logging in...", 200
+        account_linking_token = session["ACCOUNT_LINKING_TOKEN"]
+        redirect_uri = session["REDIRECT_URI"]
+        log("Account link = " + account_linking_token)
+        log("Redirect URI = " + redirect_uri)
+        data = {
+            "authorization_code": code
+        }
+        url = redirect_uri + '&' + urllib.urlencode(data)
+        log("url = " + url)
+        return redirect(url)
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -44,6 +57,9 @@ def verify():
         return request.args["hub.challenge"], 200
     return "Hello world", 200
 
+@app.route('/AccountLink', methods=['POST'])
+def account_link_webhook():
+    log(request.get_json())
 
 @app.route('/', methods=['POST'])
 def webhook():
