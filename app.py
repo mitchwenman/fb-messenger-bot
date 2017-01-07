@@ -6,16 +6,20 @@ import logging
 from AppSettings import AppSettings
 from AppLogger import AppLogger
 import AppGoogleAuth
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
+
 ## Fix for requests
 import requests
 
 from flask import Flask, request, redirect, session, url_for
 from pymessenger.bot import Bot
+from oauth2client.contrib.flask_util import UserOAuth2
+from AppMessage import AppMessage
+from AppAccountLinkMessage import AppAccountLinkMessage
 
 app = Flask(__name__)
-app.secret_key = AppSettings.get("APP_SECRET_KEY") #secure storage across requests
+app.config['SECRET_KEY'] = AppSettings.get("APP_SECRET_KEY") #secure storage across requests
+app.config['GOOGLE_OAUTH2_CLIENT_SECRETS_FILE'] = 'client_secrets.json'
+oauth2 = UserOAuth2(app)
 
 # Auth route
 @app.route('/auth', methods=['GET'])
@@ -31,6 +35,7 @@ def auth():
 # Google Callback link
 @app.route("/OAuthCallback", methods=['GET'])
 def OAuthCallback():
+    log(session)
     if request.args.get("error"):
         return "Authentication Error", 403
     else:
@@ -56,26 +61,17 @@ def verify():
 
 @app.route('/', methods=['POST'])
 def webhook():
-
-    # endpoint for processing incoming messaging events
-
+    ''' Messenger webhook '''
     data = request.get_json()
-
     if data["object"] == "page":
-
         for entry in data["entry"]:
             for messaging_event in entry["messaging"]:
                 if messaging_event.get("message"):  # someone sent us a message
-                    sender_id = messaging_event["sender"]["id"]        # the facebook ID of the person sending you the message
-                    recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
-                    message_text = messaging_event["message"].get("text")  # the message's text
-                    send_login_button(sender_id)
+                    message = AppMessage(messaging_event, AppSettings.get('PAGE_ACCESS_TOKEN'))
+                    message.handle_message()
                 if messaging_event.get("account_linking"):
-                    sender_id = messaging_event["sender"]["id"]
-                    auth_code = messaging_event['account_linking']['authorization_code']
-                    AppGoogleAuth.SaveUserCredentials(sender_id, auth_code)
-                    send_message(sender_id, "Congratulations, you have successfully linked the Work History bot to your Google Drive account!")
-
+                    link_message = AppAccountLinkMessage(messaging_event, AppSettings.get('PAGE_ACCESS_TOKEN'))
+                    link_message.handle_message()
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
 
