@@ -29,13 +29,11 @@ def auth():
     session["ACCOUNT_LINKING_TOKEN"] = account_linking_token
     session["REDIRECT_URI"] = redirect_uri
     auth_url = AppGoogleAuth.GetAuthUrl()
-    log(("Auth url: %s") % (auth_url))
     return redirect(auth_url)
 
 # Google Callback link
 @app.route("/OAuthCallback", methods=['GET'])
 def OAuthCallback():
-    log(session)
     if request.args.get("error"):
         return "Authentication Error", 403
     else:

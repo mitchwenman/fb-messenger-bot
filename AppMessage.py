@@ -26,23 +26,4 @@ class AppMessage(object):
             bot.send_text_message(self._sender_id, "Hi there!")
 
 
-    def _send_login_button(self):
-        bot = Bot(self._page_access_token)
-        bot.send_text_message(self._sender_id, "Let's get started! I'll need access to your Google Drive so I can store your work history.")
-        bot.send_message(self._sender_id, json.dumps({
-                "attachment": {
-                    "type": "template",
-                    "payload": {
-                        "template_type": "generic",
-                        "elements": [{
-                            'title': 'Login to Drive',
-                            'image_url': 'https://www.google.com/drive/static/images/drive/logo-drive.png'
-                        ,
-                            "buttons": [{
-                                        "type": "account_link",
-                                        "url": url_for("auth", _external=True)
-                            }]
-                        }]
-                    }
-                }
-        }))
+    
