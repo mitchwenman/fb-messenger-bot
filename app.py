@@ -84,34 +84,5 @@ def webhook():
     return "ok", 200
 
 
-def send_login_button(recipient_id):
-    bot = Bot(AppSettings.get("PAGE_ACCESS_TOKEN"))
-    result = bot.send_message(recipient_id, json.dumps({
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "generic",
-                    "elements": [{
-                        'title': 'Login to Drive',
-                        'image_url': 'https://www.google.com/drive/static/images/drive/logo-drive.png'
-                    ,
-                        "buttons": [{
-                                    "type": "account_link",
-                                    "url": url_for("auth", _external=True)
-                        }]
-                    }]
-                }
-            }
-    }))
-    log(result)
-
-def send_message(recipient_id, message_text):
-    '''
-        Send a message to the receipient
-    '''
-    log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
-    bot = Bot(AppSettings.get("PAGE_ACCESS_TOKEN"))
-    response = bot.send_text_message(recipient_id, message_text)
-
 def log(message):  # simple wrapper for logging to stdout on heroku
     AppLogger.log(message)
